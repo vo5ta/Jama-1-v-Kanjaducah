@@ -1,0 +1,287 @@
+source jama1.th
+
+
+################################# Plán #################################
+
+layout plan
+ 
+symbol-color line survey [100 0 0]     
+
+symbol-set UIS
+  symbol-assign line survey SKBB 
+  symbol-assign line flowstone SKBB       
+  symbol-assign line pit AUT
+  symbol-assign area water AUT
+  symbol-assign point blocks AUT
+  symbol-assign point breakdown-choke NSS
+  symbol-assign line wall:blocks  AUT
+  symbol-assign line wall:debris AUT
+  symbol-assign line wall:pebbles SKBB
+  symbol-assign area clay SKBB
+  symbol-assign area sump AUT
+  symbol-assign area blocks AUT
+  symbol-assign line chimney NZSS
+  symbol-assign line slope SKBB
+  symbol-assign point air-draught UIS
+  symbol-assign point gradient SKBB
+  symbol-assign area sand AUT
+  symbol-assign area debris AUT
+  
+  language cz                          
+  scale 1 500                              
+  cs epsg:5514                         
+  legend on                            
+  legend-width 0.20 m                   
+  
+  transparency off                       
+  opacity 0                            
+  layers on                           
+
+ scale-bar 50 m 
+
+  map-header 0 45 n                    
+  map-header-bg on                     
+
+
+ #map-image 20 50 n image002.png           
+ #map-image 100 -35 e rez.pdf        
+
+
+
+  grid bottom                          
+  grid-size 50 50 50 m                 
+ 
+
+  color map-bg [90 90 90]               
+  color map-fg [100 100 100]               
+ 
+  
+ 
+
+  symbol-hide point section				    
+  symbol-hide line section				      
+ 
+
+
+code metapost
+
+def a_water_AUT (expr Path) =
+  T:=identity;
+  thclean Path;
+  pickup PenC;
+  thfill Path withcolor col_water_bg;
+  thfill Path withpattern pattern_water_AUT;
+enddef;
+
+endcode
+
+code metapost
+def l_flowstone_UIS (expr P) =
+  T:=identity;
+  cas := 0;
+  dlzka := arclength P;
+  mojkrok:=adjust_step(dlzka, .7u);
+  if (cycle P) and (dlzka < 3.5u):
+    mojkrok := dlzka/5;
+  fi;
+  if cycle P:
+    thfill P withcolor (0.949, 0.902, 0.522);
+  fi;
+  pickup PenC;
+  t1:=0;
+  forever:
+    t2 := arctime (cas + mojkrok) of P;
+    if cycle P:
+      path curl_path;
+      curl_path := subpath (t1,t2) of P -- cycle;
+      thfill curl_path withcolor (0.949, 0.902, 0.522);
+    fi;
+    thdraw subpath (t1,t2) of P
+       withcolor (0.902, 0.851, 0.482);
+    cas := cas + mojkrok;
+    exitif cas > dlzka + (mojkrok / 3);
+    t1:=t2;
+  endfor;
+enddef;
+endcode
+
+code metapost
+
+numeric _cn;
+_cn := 50.0 / 13.5647;
+
+
+picture u_olm_pic;
+u_olm_pic := image (
+fill (-6.5770cm,-6.7531cm)..controls (-6.6888cm,-6.6942cm) and (-6.7824cm,-6.5380cm)..(-6.7824cm,-6.4106cm)
+	..controls (-6.7824cm,-6.2918cm) and (-6.7176cm,-6.1828cm)..(-6.5251cm,-5.9779cm)
+	..controls (-6.1452cm,-5.5737cm) and (-5.7811cm,-5.0249cm)..(-5.4432cm,-4.3471cm)
+	..controls (-5.1785cm,-3.8161cm) and (-5.0233cm,-3.4523cm)..(-4.5852cm,-2.3362cm)
+	..controls (-4.2068cm,-1.3720cm) and (-4.0009cm,-0.8827cm)..(-3.7796cm,-0.4215cm)
+	--(-3.6290cm,-0.1074cm)--(-3.7428cm,0.0085cm)--(-3.8565cm,0.1244cm)
+	--(-4.2509cm,0.1244cm)..controls (-4.6074cm,0.1244cm) and (-4.6552cm,0.1299cm)..(-4.7481cm,0.1821cm)
+	..controls (-4.9439cm,0.2922cm) and (-5.0101cm,0.5607cm)..(-4.8830cm,0.7307cm)
+	..controls (-4.7591cm,0.8968cm) and (-4.7309cm,0.9042cm)..(-4.1943cm,0.9133cm)
+	..controls (-3.9224cm,0.9179cm) and (-3.6614cm,0.9143cm)..(-3.6143cm,0.9054cm)
+	..controls (-3.5616cm,0.8955cm) and (-3.4685cm,0.8338cm)..(-3.3725cm,0.7450cm)
+	--(-3.2167cm,0.6006cm)--(-3.1700cm,0.6734cm)..controls (-2.8869cm,1.1145cm) and (-2.3678cm,1.7035cm)..(-1.9617cm,2.0442cm)
+	..controls (-1.3539cm,2.5541cm) and (-0.9009cm,2.7806cm)..(0.2025cm,3.1256cm)
+	..controls (0.5153cm,3.2234cm) and (0.7765cm,3.3087cm)..(0.7828cm,3.3151cm)
+	..controls (0.7891cm,3.3214cm) and (0.6563cm,3.4664cm)..(0.4876cm,3.6371cm)
+	..controls (0.2498cm,3.8780cm) and (0.1771cm,3.9684cm)..(0.1636cm,4.0402cm)
+	..controls (0.1541cm,4.0912cm) and (0.1500cm,4.3552cm)..(0.1546cm,4.6271cm)
+	..controls (0.1636cm,5.1666cm) and (0.1704cm,5.1914cm)..(0.3430cm,5.3203cm)
+	..controls (0.4402cm,5.3929cm) and (0.6530cm,5.3929cm)..(0.7501cm,5.3203cm)
+	..controls (0.9181cm,5.1949cm) and (0.9295cm,5.1576cm)..(0.9382cm,4.7065cm)
+	--(0.9464cm,4.2916cm)--(1.2553cm,3.9807cm)..controls (1.4254cm,3.8096cm) and (1.5724cm,3.6698cm)..(1.5821cm,3.6698cm)
+	..controls (1.5918cm,3.6698cm) and (1.7230cm,3.7511cm)..(1.8735cm,3.8505cm)
+	..controls (2.1907cm,4.0598cm) and (2.6633cm,4.4519cm)..(2.6633cm,4.5059cm)
+	..controls (2.6633cm,4.5261cm) and (2.6215cm,4.5889cm)..(2.5707cm,4.6453cm)
+	..controls (2.4793cm,4.7463cm) and (2.3936cm,4.7826cm)..(2.1559cm,4.8202cm)
+	..controls (2.0304cm,4.8401cm) and (1.9098cm,4.9538cm)..(1.8687cm,5.0908cm)
+	..controls (1.8231cm,5.2432cm) and (1.8759cm,5.3979cm)..(2.0109cm,5.5063cm)
+	..controls (2.1052cm,5.5821cm) and (2.1265cm,5.5878cm)..(2.3019cm,5.5832cm)
+	..controls (2.4918cm,5.5784cm) and (2.7440cm,5.5088cm)..(2.8698cm,5.4264cm)
+	..controls (2.9313cm,5.3861cm) and (2.9364cm,5.3879cm)..(3.0085cm,5.4753cm)
+	..controls (3.0495cm,5.5252cm) and (3.1464cm,5.6094cm)..(3.2239cm,5.6623cm)
+	..controls (3.3891cm,5.7754cm) and (5.2563cm,6.6428cm)..(5.4656cm,6.7037cm)
+	..controls (5.6492cm,6.7570cm) and (5.9027cm,6.7394cm)..(6.1161cm,6.6585cm)
+	..controls (6.3377cm,6.5744cm) and (6.5998cm,6.3123cm)..(6.6838cm,6.0907cm)
+	..controls (6.7647cm,5.8776cm) and (6.7824cm,5.6240cm)..(6.7289cm,5.4406cm)
+	..controls (6.6845cm,5.2878cm) and (5.8559cm,3.4736cm)..(5.7389cm,3.2730cm)
+	..controls (5.7009cm,3.2076cm) and (5.6114cm,3.0974cm)..(5.5402cm,3.0280cm)
+	--(5.4109cm,2.9021cm)--(5.4626cm,2.8162cm)..controls (5.5679cm,2.6414cm) and (5.6415cm,2.3074cm)..(5.6106cm,2.1435cm)
+	..controls (5.5854cm,2.0089cm) and (5.4284cm,1.8550cm)..(5.2936cm,1.8326cm)
+	..controls (5.1574cm,1.8099cm) and (4.9847cm,1.8746cm)..(4.9130cm,1.9752cm)
+	..controls (4.8848cm,2.0149cm) and (4.8436cm,2.1355cm)..(4.8214cm,2.2434cm)
+	..controls (4.7864cm,2.4133cm) and (4.7668cm,2.4528cm)..(4.6756cm,2.5387cm)
+	..controls (4.6177cm,2.5933cm) and (4.5541cm,2.6379cm)..(4.5342cm,2.6379cm)
+	..controls (4.5145cm,2.6379cm) and (4.4159cm,2.5662cm)..(4.3150cm,2.4788cm)
+	..controls (4.0799cm,2.2745cm) and (3.7380cm,2.0299cm)..(3.4745cm,1.8775cm)
+	--(3.2671cm,1.7575cm)--(3.4722cm,1.5512cm)--(3.6771cm,1.3450cm)
+	--(4.0943cm,1.3366cm)..controls (4.4697cm,1.3291cm) and (4.5190cm,1.3227cm)..(4.5862cm,1.2725cm)
+	..controls (4.8152cm,1.1015cm) and (4.8152cm,0.7876cm)..(4.5862cm,0.6166cm)
+	..controls (4.5177cm,0.5655cm) and (4.4712cm,0.5602cm)..(4.0173cm,0.5527cm)
+	..controls (3.7456cm,0.5481cm) and (3.4815cm,0.5520cm)..(3.4306cm,0.5615cm)
+	..controls (3.3562cm,0.5753cm) and (3.2535cm,0.6624cm)..(2.9101cm,1.0033cm)
+	..controls (2.5519cm,1.3587cm) and (2.4721cm,1.4256cm)..(2.4206cm,1.4142cm)
+	..controls (2.3867cm,1.4066cm) and (2.2459cm,1.3697cm)..(2.1076cm,1.3319cm)
+	..controls (1.9694cm,1.2942cm) and (1.5674cm,1.2042cm)..(1.2144cm,1.1320cm)
+	..controls (0.2561cm,0.9358cm) and (-0.0811cm,0.8218cm)..(-0.4711cm,0.5623cm)
+	..controls (-0.7146cm,0.4004cm) and (-1.1754cm,-0.0550cm)..(-1.5553cm,-0.5090cm)
+	--(-1.8086cm,-0.8116cm)--(-1.5200cm,-1.1043cm)..controls (-1.2109cm,-1.4179cm) and (-1.1499cm,-1.5282cm)..(-1.1965cm,-1.6894cm)
+	..controls (-1.2088cm,-1.7322cm) and (-1.3271cm,-1.9834cm)..(-1.4593cm,-2.2472cm)
+	..controls (-1.7310cm,-2.7898cm) and (-1.7769cm,-2.8391cm)..(-2.0098cm,-2.8388cm)
+	..controls (-2.2362cm,-2.8384cm) and (-2.3899cm,-2.6863cm)..(-2.3901cm,-2.4622cm)
+	..controls (-2.3903cm,-2.3612cm) and (-2.3582cm,-2.2723cm)..(-2.2257cm,-2.0064cm)
+	--(-2.0611cm,-1.6758cm)--(-2.1650cm,-1.5695cm)..controls (-2.2220cm,-1.5109cm) and (-2.2780cm,-1.4631cm)..(-2.2893cm,-1.4631cm)
+	..controls (-2.3006cm,-1.4631cm) and (-2.6273cm,-1.9423cm)..(-3.0152cm,-2.5281cm)
+	..controls (-3.4033cm,-3.1138cm) and (-3.8810cm,-3.8345cm)..(-4.0769cm,-4.1295cm)
+	..controls (-4.4480cm,-4.6886cm) and (-4.9085cm,-5.3200cm)..(-5.2584cm,-5.7494cm)
+	..controls (-5.6039cm,-6.1734cm) and (-6.1024cm,-6.7035cm)..(-6.2059cm,-6.7570cm)
+	..controls (13.785200,-0.859375) and (10.359400,-0.824219)..(-6.5770cm,-6.7531cm)
+	--cycle withcolor (0.827451,0.372549,0.372549);
+fill (-2.6533cm,-0.6164cm)..controls (-2.0846cm,0.1343cm) and (-1.4728cm,0.8079cm)..(-1.1134cm,1.0788cm)
+	..controls (-0.5437cm,1.5083cm) and (-0.1010cm,1.6760cm)..(1.1154cm,1.9231cm)
+	..controls (1.4065cm,1.9823cm) and (1.7804cm,2.0667cm)..(1.9463cm,2.1108cm)
+	..controls (2.7103cm,2.3139cm) and (3.3453cm,2.6617cm)..(3.9111cm,3.1868cm)
+	..controls (4.1775cm,3.4340cm) and (4.2280cm,3.4581cm)..(4.4809cm,3.4582cm)
+	..controls (4.5944cm,3.4584cm) and (4.7331cm,3.4711cm)..(4.7890cm,3.4866cm)
+	..controls (4.9938cm,3.5435cm) and (5.0386cm,3.6154cm)..(5.5213cm,4.6620cm)
+	..controls (5.8981cm,5.4790cm) and (5.9707cm,5.6557cm)..(5.9595cm,5.7302cm)
+	..controls (5.9424cm,5.8460cm) and (5.8792cm,5.9136cm)..(5.7688cm,5.9343cm)
+	..controls (5.6925cm,5.9486cm) and (5.5446cm,5.8884cm)..(4.6943cm,5.4964cm)
+	..controls (4.1519cm,5.2463cm) and (3.6804cm,5.0159cm)..(3.6463cm,4.9841cm)
+	..controls (3.5321cm,4.8782cm) and (3.5018cm,4.7817cm)..(3.4844cm,4.4697cm)
+	--(3.4679cm,4.1715cm)--(3.2838cm,3.9844cm)..controls (3.0426cm,3.7390cm) and (2.6298cm,3.3990cm)..(2.3325cm,3.2009cm)
+	..controls (1.8072cm,2.8507cm) and (1.3842cm,2.6637cm)..(0.4672cm,2.3762cm)
+	..controls (-0.3374cm,2.1239cm) and (-0.5703cm,2.0301cm)..(-0.9287cm,1.8136cm)
+	..controls (-1.7463cm,1.3197cm) and (-2.4728cm,0.4508cm)..(-3.0379cm,-0.7090cm)
+	..controls (-3.1975cm,-1.0366cm) and (-3.5280cm,-1.7889cm)..(-3.5280cm,-1.8246cm)
+	..controls (-3.5280cm,-1.8340cm) and (-3.4011cm,-1.6581cm)..(-3.2460cm,-1.4340cm)
+	..controls (-3.0910cm,-1.2099cm) and (-2.8242cm,-0.8420cm)..(-2.6533cm,-0.6164cm)
+	--cycle withcolor (0.827451,0.372549,0.372549);
+fill (-2.6533cm,-0.6164cm)--cycle withcolor (0.827451,0.372549,0.372549);
+) scaled _cn;
+
+def p_u_olm (expr P, R, S, A) =
+  U := (6.7824cm, 6.7570cm) scaled _cn scaled (0.01 / Scale);
+  T := identity aligned A rotated R scaled S shifted P;
+  thdraw u_olm_pic scaled (0.01055 / Scale);
+enddef;
+
+def p_u_olm_legend =
+  draw u_olm_pic scaled (u / 50cm) shifted ((.5,.5) inscale);
+enddef;
+
+endcode
+
+
+
+
+
+
+   
+endlayout
+
+
+
+
+
+################################# Rozvinutý řez #################################
+layout extend_elevation
+ 
+symbol-color line survey [100 0 0]     
+
+symbol-set UIS
+  symbol-assign line survey SKBB 
+  symbol-assign line flowstone SKBB       
+  symbol-assign area water AUT
+  symbol-assign point blocks AUT
+  symbol-assign point breakdown-choke NSS
+  symbol-assign line wall:blocks  AUT
+  symbol-assign line wall:debris AUT
+  symbol-assign line wall:pebbles SKBB
+  symbol-assign area clay SKBB
+  symbol-assign area sump AUT
+    symbol-assign area sand AUT
+  symbol-assign area debris AUT
+
+  language cz                           
+  scale 1 500                           
+  cs epsg:5514                          
+  legend on                             
+  
+  transparency off                      
+  opacity 0                            
+  layers on                             
+
+
+  map-header 0 0 off                    
+  map-header-bg on                      
+ 
+  grid bottom                           
+  grid-size 10 10 10 m                  
+ 
+  color map-bg [90 90 90]              
+  color map-fg [100 100 100]                
+
+
+
+
+
+endlayout extend_elevation
+
+
+
+
+
+
+
+
+ export map   -layout plan               -o output/jama1.pdf 
+ export map   -layout extend_elevation  -proj extended      -o output/jama1_rez.pdf
+
+
+
+text cz "point u:olm"             macarát
